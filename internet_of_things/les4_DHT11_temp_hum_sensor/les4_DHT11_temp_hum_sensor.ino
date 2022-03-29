@@ -19,6 +19,7 @@ DHT dht(DHTPin, DHTTYPE);   // Initialize DHT sensor.
 float Temperature;          // temperature
 float Humidity;             // humidity
 float HeatIndex;            // Heatindex
+float Kelvin;
  
 //      web server
 #include <ESP8266WiFi.h>
@@ -39,6 +40,8 @@ void readDHT11(){
    *  the DHT11 is known for erroneous readings
    */
     float temperature =  round(dht.readTemperature()*10)/10; // Gets the values of the temperature
+    float kelvin = round(temperature+273.15); // Gets the values of the temperature
+    
     float humidity = round(dht.readHumidity()*10)/10; // Gets the values of the humidity
     // Compute heat index in Celsius (isFahrenheit = false)
     float heatindex = round(dht.computeHeatIndex( Temperature, Humidity, false)*10)/10; 
@@ -52,6 +55,7 @@ void readDHT11(){
         Temperature = temperature;
         Humidity =  humidity ;
         HeatIndex = heatindex;
+        Kelvin = kelvin;
         // show in Serial Monitor
         Serial.print("Temp. ");
         Serial.print(Temperature);
@@ -59,8 +63,10 @@ void readDHT11(){
         Serial.print(humidity);
         Serial.print("% Heatindex ");
         Serial.println(heatindex);
-        Serial.println("light. ");
+        Serial.print("light. ");
         Serial.println(lichtHoeveelheid);
+        Serial.print("Kelvin ");
+        Serial.println(kelvin);
       }
  } 
 
@@ -94,7 +100,7 @@ void handleNotFound(){
 void handleSensor(){
   server.send(200, "text/html", "<h3>Duurzaam Huis: " 
    +  studentName + "</h3>Temperature " + String(Temperature) + 
-   " Celsius<br>Humidity " + String(Humidity) +  " %<br>Heatindex " + String(HeatIndex) + "<br>light" + String(lichtHoeveelheid));
+   " Celsius<br>Humidity " + String(Humidity) +  " %<br>Heatindex " + String(HeatIndex) + "<br>Kelvin: " + String(Kelvin) + "<br>light" + String(lichtHoeveelheid));
 
    // hier nog lichtwaarde naar website
    
@@ -126,5 +132,6 @@ void loop(){
 
 
 
-  Serial.println(lichtHoeveelheid);
+//  Serial.println(lichtHoeveelheid);
+//  Serial.println(Kelvin);
 }
